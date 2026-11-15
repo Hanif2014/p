@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secret Letter from Hanif</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Arial,sans-serif;
+ background:linear-gradient(160deg,#d9f5ff,#9bd9ef,#dcefff);
+ color:#244e68;min-height:100vh;
+ overflow-x:hidden;
+}
+header{text-align:center;padding:22px 10px}
+h1{color:#267da7}
+h2{color:#327fa5}
+.screen{display:none;padding:15px;max-width:650px;margin:auto}
+.screen.active{display:block}
+.panel{
+ background:#ffffffd9;border-radius:22px;padding:22px;
+ box-shadow:0 8px 25px #428caf35;
+ text-align:center;margin:15px 0;
+}
+button{
+ border:0;border-radius:14px;padding:13px 20px;
+ background:#398db5;color:white;font-weight:bold;
+ cursor:pointer;margin:5px;
+}
+button:hover{filter:brightness(1.08)}
+input{
+ width:90%;padding:13px;border-radius:12px;
+ border:1px solid #9bc9dc;margin:10px 0;
+ font-size:16px;
+}
+.secondary{background:#a7cddd;color:#244e68}
+.danger{background:#df829e}
+.quest{
+ background:#f2fbff;border-radius:15px;
+ padding:15px;margin:10px 0;text-align:left;
+}
+.quest button{float:right}
+.small{font-size:13px;color:#63869a}
+#gameArea{
+ height:230px;background:linear-gradient(#bcecff,#e9faff);
+ border-radius:15px;position:relative;overflow:hidden;
+ border-bottom:8px solid #4799b9;
+}
+#minato{
+ position:absolute;bottom:8px;left:35px;
+ font-size:42px;
+}
+.obstacle{
+ position:absolute;bottom:8px;right:-40px;
+ font-size:30px;
+}
+#targetArea{
+ height:230px;position:relative;
+ background:linear-gradient(#c9efff,#f4fcff);
+ border-radius:18px;overflow:hidden;
+}
+.target{
+ position:absolute;font-size:36px;
+ cursor:pointer;
+}
+#digArea{
+ background:#c99b70;border-radius:15px;
+ min-height:250px;padding:15px;
+ display:grid;grid-template-columns:repeat(5,1fr);
+ gap:5px;
+}
+.tile{
+ background:#b77d54;border-radius:6px;
+ height:40px;color:white;display:grid;
+ place-items:center;cursor:pointer;
+}
+.tile.empty{background:#9ed6e9}
+.tile.found{background:#ffe6a5;color:#654b29}
+#letter{background:#e7f8ff}
+.song{
+ display:flex;align-items:center;gap:13px;
+ background:#effaff;padding:12px;
+ border-radius:15px;margin:12px 0;
+ text-align:left;cursor:pointer;
+}
+.cover{
+ width:75px;height:75px;border-radius:12px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#79c9e7,#d8f3ff);
+ font-size:30px;flex-shrink:0;
+}
+.message{
+ display:none;background:#d9f3ff;
+ border-radius:15px;padding:18px;margin:10px 0;
+ animation:appear .5s;
+}
+@keyframes appear{
+ from{opacity:0;transform:translateY(10px)}
+ to{opacity:1;transform:translateY(0)}
+}
+.heart{color:#e887aa}
+#noBtn{transition:all .2s}
+footer{text-align:center;padding:25px;color:#56869f}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌊 Secret Letter 💌</h1>
+<p>A little adventure from Hanif</p>
+</header>
+
+<!-- SCREEN 1 PASSWORD -->
+<section id="login" class="screen active">
+<div class="panel">
+<h2>Haloo, Mau masukk? password duluu dongg</h2>
+<p>Masukkan password untuk membuka website 💙</p>
+<input id="password" type="password" placeholder="Masukkan password...">
+<br>
+<button onclick="login()">MASUK</button>
+<br>
+<button class="secondary" onclick="show('riddle')">
+gaa tauu password
+</button>
+<p id="loginMsg"></p>
+</div>
+</section>
+
+<!-- SCREEN 2 TEKA TEKI -->
+<section id="riddle" class="screen">
+<div class="panel">
+<h2>💌 Tebak-tebakan Romance</h2>
+<p id="riddleNumber">Teka-teki 1 dari 5</p>
+<h3 id="riddleQuestion"></h3>
+<div id="riddleOptions"></div>
+<p id="riddleMsg"></p>
+</div>
+</section>
+
+<!-- MENU -->
+<section id="menu" class="screen">
+<div class="panel">
+<h2>Welcome to Hanif's World 🌊</h2>
+<p>Temukan surat rahasia dari Hanif!</p>
+<h3>Quest Progress</h3>
+<h2 id="progress">0 / 5</h2>
+<div id="questList"></div>
+<button onclick="show('login')">Keluar</button>
+</div>
+</section>
+
+<!-- GAME 1 -->
+<section id="game1" class="screen">
+<div class="panel">
+<h2>⚡ Minato Run</h2>
+<p>Berjalan dan hindari rintangan!</p>
+<h2>Score: <span id="score">0</span> / 1000</h2>
+<div id="gameArea">
+<div id="minato">🥷</div>
+<div id="obstacle" class="obstacle">🌵</div>
+</div>
+<p class="small">Tekan tombol LOMPAT atau spasi untuk menghindar.</p>
+<button onclick="jump()">LOMPAT</button>
+<button class="secondary" onclick="walk()">JALAN +1</button>
+<p id="runMsg"></p>
+</div>
+</section>
+
+<!-- PERTANYAAN G1 -->
+<section id="question1" class="screen">
+<div class="panel">
+<h2>Kamu suka nggak sama website ini? 💗</h2>
+<button onclick="finish1()">SUKAAA!</button>
+<button class="danger" onclick="retry1()">NGGAK</button>
+<p id="questionMsg"></p>
+</div>
+</section>
+
+<!-- GAME 2 -->
+<section id="game2" class="screen">
+<div class="panel">
+<h2>🏹 Love Archery</h2>
+<p>Tekan target hati sebanyak 5 kali!</p>
+<h2 id="arrowScore">0 / 5</h2>
+<div id="targetArea">
+<div class="target" id="heartTarget" onclick="hitTarget()">💗</div>
+</div>
+<p id="quote"></p>
+</div>
+</section>
+
+<!-- GAME 3 -->
+<section id="game3" class="screen">
+<div class="panel">
+<h2>💙 Who Is Hanif?</h2>
+<p id="quizCount"></p>
+<h3 id="quizQuestion"></h3>
+<div id="quizOptions"></div>
+<p id="quizMsg"></p>
+</div>
+</section>
+
+<!-- GAME 4 -->
+<section id="game4" class="screen">
+<div class="panel">
+<h2>⛏️ Dig for Love</h2>
+<p>Gali tanah sampai menemukan kode rahasia!</p>
+<h3>Kode yang ditemukan:</h3>
+<input id="foundCode" placeholder="Kode akan muncul di sini" readonly>
+<div id="digArea"></div>
+<input id="codeInput" placeholder="Masukkan kode di sini">
+<br>
+<button onclick="checkCode()">PERIKSA KODE</button>
+<p id="digMsg"></p>
+</div>
+</section>
+
+<!-- GAME 5 -->
+<section id="game5" class="screen">
+<div class="panel">
+<h2>💗 Do You Like Me?</h2>
+<p>Kamu suka aku nggak?</p>
+<button onclick="finish5()">SUKAAA ❤️</button>
+<button id="noBtn" class="danger" onclick="shrinkNo()">ENGGAK</button>
+<p id="noMsg"></p>
+</div>
+</section>
+
+<!-- SURAT -->
+<section id="letter" class="screen">
+<div class="panel" id="letter">
+<h2>💌 SECRET LETTER UNLOCKED</h2>
+<p>Selamat! Kamu berhasil menyelesaikan semua quest!</p>
+<p>Ini ada sedikit pesan dari Hanif buat kamu.</p>
+
+<div class="song" onclick="openMessage(1)">
+<div class="cover">🌊🎵</div>
+<div><b>Aku Milikmu</b><p class="small">Klik untuk membuka pesan</p></div>
+</div>
+<div id="message1" class="message">
+<h3>💙 Aku Milikmu</h3>
+<p>Haloo udah lama banget nihh</p>
+</div>
+
+<div class="song" onclick="openMessage(2)">
+<div class="cover">🐋🎶</div>
+<div><b>Kangen</b><p class="small">Klik untuk membuka pesan</p></div>
+</div>
+<div id="message2" class="message">
+<h3>💗 Kangen</h3>
+<p>Aduh kangenn</p>
+</div>
+
+<div class="song" onclick="openMessage(3)">
+<div class="cover">🌌🎵</div>
+<div><b>Perunggu</b><p class="small">Klik untuk membuka pesan</p></div>
+</div>
+<div id="message3" class="message">
+<h3>🌊 Perunggu</h3>
+<p>Terima kasih yaaa udah mau main sampai selesai. Semoga kamu suka sama website kecil ini. 💙</p>
+</div>
+<p class="heart">Made with love by Hanif ♡</p>
+</div>
+</section>
+
+<footer>🌊 Made with love | Hanif</footer>
+
+<script>
+const PASSWORD="Hanif Ganteng";
+const SECRET_CODE="OCEAN27";
+let completed=JSON.parse(localStorage.getItem("quests")||"[false,false,false,false,false]");
+let score=0,runTimer=null,obstacleTimer=null;
+let arrows=0,quizIndex=0,digFound=false,riddleIndex=0;
+
+// SCREEN NAVIGATION
+function show(id){
+ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ if(id==="menu")renderMenu();
+ if(id==="riddle")renderRiddle();
+ if(id==="game3")renderQuiz();
+ if(id==="game4")renderDig();
+}
+function login(){
+ if(document.getElementById("password").value===PASSWORD){
+  show("menu");
+  document.getElementById("loginMsg").textContent="";
+ }else{
+  document.getElementById("loginMsg").textContent="Password salah! Coba lagi ya 💙";
+ }
+}
+
+// RIDDLE
+const riddles=[
+ {q:"Apa yang bisa membuat dua orang merasa dekat walau berjauhan?",a:["Jarak","Perhatian","Sepatu"],correct:1},
+ {q:"Apa yang paling indah ketika diberikan dengan tulus?",a:["Hadiah mahal","Perhatian","Batu"],correct:1},
+ {q:"Apa yang membuat kenangan tetap hidup?",a:["Ingatan","Jam","Pintu"],correct:0},
+ {q:"Apa yang membuat seseorang tersenyum saat melihat pesan?",a:["Tagihan","Pesan dari orang spesial","PR"],correct:1},
+ {q:"Apa yang tidak bisa dibeli dengan uang?",a:["Waktu dan ketulusan","Baju","Makanan"],correct:0}
+];
+function renderRiddle(){
+ let r=riddles[riddleIndex];
+ document.getElementById("riddleNumber").textContent=`Teka-teki ${riddleIndex+1} dari 5`;
+ document.getElementById("riddleQuestion").textContent=r.q;
+ document.getElementById("riddleMsg").textContent="";
+ document.getElementById("riddleOptions").innerHTML="";
+ r.a.forEach((a,i)=>{
+  let b=document.createElement("button");
+  b.textContent=a;
+  b.onclick=()=>{
+   if(i===r.correct){
+    riddleIndex++;
+    if(riddleIndex===5){
+     riddleIndex=0;
+     document.getElementById("riddleMsg").textContent="Password teka-teki: Hanif Ganteng 💙";
+     setTimeout(()=>show("login"),1500);
+    }else renderRiddle();
+   }else document.getElementById("riddleMsg").textContent="Belum tepat, coba lagi!";
+  };
+  document.getElementById("riddleOptions").appendChild(b);
+ });
+}
+
+// QUEST MENU
+function renderMenu(){
+ let names=["Minato Run","Love Archery","Who Is Hanif?","Dig for Love","Do You Like Me?"];
+ document.getElementById("progress").textContent=completed.filter(Boolean).length+" / 5";
+ document.getElementById("questList").innerHTML="";
+ names.forEach((n,i)=>{
+  let d=document.createElement("div");
+  d.className="quest";
+  d.innerHTML=`<b>${i+1}. ${n}</b> <span>${completed[i]?"✅ Selesai":"🔒 Quest"}</span>`;
+  if(i===0||completed[i-1]){
+   let b=document.createElement("button");
+   b.textContent=completed[i]?"ULANG":"MAIN";
+   b.onclick=()=>startGame(i+1);
+   d.appendChild(b);
+  }
+  document.getElementById("questList").appendChild(d);
+ });
+ if(completed.every(Boolean)){
+  let b=document.createElement("button");
+  b.textContent="BUKA SURAT 💌";
+  b.onclick=()=>show("letter");
+  document.getElementById("questList").appendChild(b);
+ }
+}
+function completeQuest(i){
+ completed[i-1]=true;
+ localStorage.setItem("quests",JSON.stringify(completed));
+ show("menu");
+}
+function startGame(n){
+ if(n===1){score=0;updateScore();show("game1");}
+ if(n===2){arrows=0;updateArrows();show("game2");}
+ if(n===3){quizIndex=0;show("game3");}
+ if(n===4){digFound=false;show("game4");}
+ if(n===5){show("game5");resetNo();}
+}
+
+// GAME 1
+function updateScore(){
+ document.getElementById("score").textContent=score;
+}
+function walk(){
+ if(score>=1000)return;
+ score++;
+ updateScore();
+ if(score===1000){
+  clearInterval(runTimer);
+  show("question1");
+ }
+}
+function jump(){
+ let d=document.getElementById("minato");
+ d.style.transform="translateY(-65px)";
+ setTimeout(()=>d.style.transform="translateY(0)",400);
+}
+function retry1(){
+ score=0;updateScore();
+ document.getElementById("questionMsg").textContent="Yuk coba lagi dari awal!";
+ show("game1");
+}
+function finish1(){completeQuest(1);}
+
+// GAME 2
+const quotes=[
+"Hal sederhana bisa menjadi kenangan yang indah. 💙",
+"Seperti laut, perhatian yang tulus selalu punya kedalaman.",
+"Kadang satu senyuman cukup membuat hari lebih cerah.",
+"Jangan lupa, kamu berharga.",
+"Terima kasih sudah sampai sejauh ini! 💗"
+];
+function updateArrows(){
+ document.getElementById("arrowScore").textContent=arrows+" / 5";
+}
+function hitTarget(){
+ if(arrows>=5)return;
+ document.getElementById("quote").textContent=quotes[arrows];
+ arrows++;updateArrows();
+ let t=document.getElementById("heartTarget");
+ t.style.left=Math.random()*75+"%";
+ t.style.top=Math.random()*70+"%";
+ if(arrows===5)setTimeout(()=>completeQuest(2),1200);
+}
+
+// GAME 3
+const quiz=[
+ {q:"Minuman kesukaan Hanif?",a:["Jus","Susu","Teh"],c:1},
+ {q:"Makanan kesukaan Hanif?",a:["Ayam","Pizza","Bakso"],c:0},
+ {q:"Game favorit Hanif?",a:["Minecraft","MLBB","Roblox"],c:1},
+ {q:"Siapa orang yang paling disayangi Hanif?",a:["Teman","Kedua orang tua","Tetangga"],c:1},
+ {q:"Siapa orang yang disukai Hanif?",a:["Orang yang menerima website ini","Pemain bola","Karakter anime"],c:0}
+];
+function renderQuiz(){
+ if(quizIndex>=quiz.length){completeQuest(3);return;}
+ let q=quiz[quizIndex];
+ document.getElementById("quizCount").textContent=`Soal ${quizIndex+1} / 5`;
+ document.getElementById("quizQuestion").textContent=q.q;
+ document.getElementById("quizMsg").textContent="";
+ document.getElementById("quizOptions").innerHTML="";
+ q.a.forEach((a,i)=>{
+  let b=document.createElement("button");
+  b.textContent=a;
+  b.onclick=()=>{
+   if(i===q.c){
+    quizIndex++;
+    renderQuiz();
+   }else document.getElementById("quizMsg").textContent="Ups, coba pikir lagi ya!";
+  };
+  document.getElementById("quizOptions").appendChild(b);
+ });
+}
+
+// GAME 4
+function renderDig(){
+ let area=document.getElementById("digArea");
+ area.innerHTML="";
+ document.getElementById("foundCode").value="";
+ document.getElementById("codeInput").value="";
+ document.getElementById("digMsg").textContent="";
+ for(let i=0;i<25;i++){
+  let t=document.createElement("div");
+  t.className="tile";
+  t.textContent="🟫";
+  t.onclick=()=>{
+   if(digFound)return;
+   if(i===22){
+    t.textContent="💎";
+    t.classList.add("found");
+    digFound=true;
+    document.getElementById("foundCode").value=SECRET_CODE;
+    document.getElementById("digMsg").textContent="Kamu menemukan kode rahasia!";
+   }else{
+    t.textContent=" ";
+    t.classList.add("empty");
+   }
+  };
+  area.appendChild(t);
+ }
+}
+function checkCode(){
+ if(digFound&&document.getElementById("codeInput").value.trim().toUpperCase()===SECRET_CODE){
+  completeQuest(4);
+ }else document.getElementById("digMsg").textContent="Kode belum benar. Cari harta karunnya dulu!";
+}
+
+// GAME 5
+function resetNo(){
+ let b=document.getElementById("noBtn");
+ b.style.transform="scale(1)";
+ b.style.opacity="1";
+ document.getElementById("noMsg").textContent="";
+}
+function shrinkNo(){
+ let b=document.getElementById("noBtn");
+ let current=Number(b.dataset.size||1);
+ current=Math.max(.15,current-.17);
+ b.dataset.size=current;
+ b.style.transform=`scale(${current})`;
+ document.getElementById("noMsg").textContent="Hehe, yakin nih? 💗";
+}
+function finish5(){completeQuest(5);}
+
+// LETTER
+function openMessage(n){
+ document.getElementById("message"+n).style.display="block";
+}
+
+// KEYBOARD
+document.addEventListener("keydown",e=>{
+ if(e.code==="Space"&&document.getElementById("game1").classList.contains("active")){
+  e.preventDefault();jump();
+ }
+});
+
+// INITIAL
+renderMenu();
+</script>
+</body>
+</html>
